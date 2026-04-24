@@ -2,7 +2,6 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Manoj Photo Rush Pro</title>
@@ -232,16 +231,7 @@ function updateDifficulty() {
         gameTimer = setInterval(() => createItem(minS, maxS, bomb), rate);
     }
 }
-    // ✅ FIX: update level UI
-    const tag = document.getElementById('level-tag');
-    tag.innerText = "Level: " + lvl;
-    tag.style.borderColor = clr;
-    tag.style.color = clr;
-
-    if (gameActive) {
-        gameTimer = setInterval(() => createItem(minS, maxS, bomb), rate);
-    }
-}
+    
 
 function createItem(minS, maxS, bombChance) {
     if (!gameActive) return;
