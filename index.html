@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Manoj Photo Rush Pro</title>
     <style>
+        
         :root {
             --primary: #facc15;
             --danger: #ef4444;
@@ -26,6 +27,10 @@
         #game-screen { display: none; z-index: 10; }
 
         /* Home Page Styles */
+        #home-screen {
+    z-index: 50;
+}
+
         #home-screen {
             background: radial-gradient(circleAt center, #1e293b 0%, #020617 100%);
         }
@@ -87,7 +92,8 @@
         <div class="title">Click On Photos to Get Points</div>
         <div class="developer">Developed by Manoj Zapadiya</div>
         <div class="high-score-display">🏆 High Score: <span id="home-high-score">0</span></div>
-        <button class="btn" onclick="startGame()">START GAME</button>
+        <button class="btn" id="startBtn">START GAME</button>
+
     </div>
 
     <div id="game-screen" class="screen">
@@ -212,6 +218,8 @@
             document.getElementById('final-score').innerText = score;
             document.getElementById('death-reason').innerText = reason;
         }
+        document.getElementById("startBtn").addEventListener("click", startGame);
+
     </script>
 </body>
 </html>
