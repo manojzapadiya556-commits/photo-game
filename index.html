@@ -1,147 +1,23 @@
-<!DOCTYPE html>
-<html lang="gu">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Manoj Photo Rush Pro</title>
-
-<style>
-:root {
-    --primary: #facc15;
-    --danger: #ef4444;
-    --bg: #020617;
-}
-
-body, html {
-    margin: 0; padding: 0; width: 100%; height: 100%;
-    overflow: hidden; background: var(--bg);
-    font-family: 'Segoe UI', Roboto, sans-serif; color: white;
-}
-
-.screen {
-    position: absolute; width: 100%; height: 100%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-
-#game-screen { display: none; }
-
-#home-screen {
-    z-index: 50;
-    background: radial-gradient(circle, #1e293b, #020617);
-}
-
-.title {
-    font-size: 50px;
-    font-weight: 900;
-    color: var(--primary);
-    margin-bottom: 10px;
-}
-
-.developer {
-    font-size: 18px;
-    margin-bottom: 30px;
-}
-
-.high-score-display {
-    margin-bottom: 20px;
-}
-
-.btn {
-    padding: 12px 30px;
-    font-size: 18px;
-    background: var(--primary);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.stats {
-    position: absolute;
-    top: 10px;
-    padding: 10px;
-    background: rgba(0,0,0,0.6);
-}
-
-.stats-left { left: 10px; }
-.stats-right { right: 10px; }
-
-.falling-photo, .bomb {
-    position: absolute;
-    border-radius: 50%;
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-.bomb {
-    width: 60px;
-    height: 60px;
-    background: red;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-}
-
-#level-tag {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-#game-over-screen {
-    display: none;
-}
-</style>
-</head>
-
-<body>
-
-<div id="home-screen" class="screen">
-    <div class="title">Click On Photos to Get Points</div>
-    <div class="developer">Developed by Manoj</div>
-    <div>High Score: <span id="home-high-score">0</span></div>
-    <button class="btn" id="startBtn">START GAME</button>
-</div>
-
-<div id="game-screen" class="screen">
-    <div class="stats stats-left">
-        Score: <span id="score">0</span><br>
-        Lives: <span id="lives">10</span>
-    </div>
-
-    <div class="stats stats-right">
-        Record: <span id="game-high-score">0</span>
-    </div>
-
-    <div id="level-tag">Level: Easy</div>
-    <div id="game-area" style="width:100%; height:100%; position:relative;"></div>
-</div>
-
-<div id="game-over-screen" class="screen">
-    <h1>GAME OVER</h1>
-    <p id="death-reason"></p>
-    <h2>Score: <span id="final-score">0</span></h2>
-    <button onclick="startGame()">PLAY AGAIN</button>
-    <button onclick="goHome()">HOME</button>
-</div>
-
 <script>
 const userImg = "./photo.jpg";
 
 let score = 0, lives = 10, gameActive = false, gameTimer;
 let highScore = localStorage.getItem('photoProScore') || 0;
 
+// init scores
 document.getElementById('home-high-score').innerText = highScore;
 document.getElementById('game-high-score').innerText = highScore;
 
-document.getElementById("startBtn").onclick = startGame;
+// start button
+document.getElementById("startBtn").addEventListener("click", startGame);
 
 function startGame() {
-    score = 0; lives = 10; gameActive = true;
+    score = 0;
+    lives = 10;
+    gameActive = true;
 
-    document.getElementById('score').innerText = 0;
-    document.getElementById('lives').innerText = 10;
+    document.getElementById('score').innerText = "0";
+    document.getElementById('lives').innerText = "10";
 
     document.getElementById('home-screen').style.display = 'none';
     document.getElementById('game-over-screen').style.display = 'none';
@@ -153,24 +29,44 @@ function startGame() {
 }
 
 function goHome() {
+    document.getElementById('game-over-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('home-screen').style.display = 'flex';
+    document.getElementById('home-high-score').innerText = highScore;
 }
 
 function updateDifficulty() {
     clearInterval(gameTimer);
 
     let rate = 1000, minS = 3, maxS = 5, bomb = 0.05;
-    let lvl = "Easy";
+    let lvl = "Easy", clr = "#4ade80";
 
-    if (score >= 40) { rate = 200; lvl = "GOD MODE"; }
-    else if (score >= 30) { rate = 400; lvl = "IMPOSSIBLE"; }
-    else if (score >= 20) { rate = 600; lvl = "HARD"; }
-    else if (score >= 10) { rate = 800; lvl = "MEDIUM"; }
+    if (score >= 40) {
+        rate = 200; minS = 12; maxS = 18; bomb = 0.40;
+        lvl = "GOD MODE 💀"; clr = "#ef4444";
+    }
+    else if (score >= 30) {
+        rate = 400; minS = 8; maxS = 12; bomb = 0.25;
+        lvl = "IMPOSSIBLE 🚫"; clr = "#ef4444";
+    }
+    else if (score >= 20) {
+        rate = 600; minS = 6; maxS = 9; bomb = 0.15;
+        lvl = "HARD 🔴"; clr = "#fb923c";
+    }
+    else if (score >= 10) {
+        rate = 800; minS = 4; maxS = 7; bomb = 0.10;
+        lvl = "MEDIUM 🟠"; clr = "#facc15";
+    }
 
-    document.getElementById("level-tag").innerText = "Level: " + lvl;
+    // ✅ FIX: update level UI
+    const tag = document.getElementById('level-tag');
+    tag.innerText = "Level: " + lvl;
+    tag.style.borderColor = clr;
+    tag.style.color = clr;
 
-    gameTimer = setInterval(() => createItem(minS, maxS, bomb), rate);
+    if (gameActive) {
+        gameTimer = setInterval(() => createItem(minS, maxS, bomb), rate);
+    }
 }
 
 function createItem(minS, maxS, bombChance) {
@@ -182,25 +78,29 @@ function createItem(minS, maxS, bombChance) {
     item.className = isBomb ? 'bomb' : 'falling-photo';
 
     if (isBomb) {
-        item.innerHTML = "💣";
+        item.innerHTML = '💣';
     } else {
         item.src = userImg;
 
-        let size = window.innerWidth < 600
-            ? Math.random() * 30 + 60
-            : Math.random() * 50 + 90;
+        // ✅ FIX: responsive size
+        let size;
+        if (window.innerWidth < 600) {
+            size = Math.floor(Math.random() * 30) + 60;
+        } else {
+            size = Math.floor(Math.random() * 40) + 70;
+        }
 
-        item.style.width = size + "px";
-        item.style.height = size + "px";
+        item.style.width = size + 'px';
+        item.style.height = size + 'px';
     }
 
     item.style.left = Math.random() * (window.innerWidth - 100) + 'px';
-    item.style.top = "-100px";
+    item.style.top = '-150px';
 
-    document.getElementById("game-area").appendChild(item);
+    document.getElementById('game-area').appendChild(item);
 
-    let top = -100;
-    let speed = Math.random() * (maxS - minS) + minS;
+    let top = -150;
+    const speed = Math.random() * (maxS - minS) + minS;
 
     const fall = setInterval(() => {
         if (!gameActive) {
@@ -210,7 +110,7 @@ function createItem(minS, maxS, bombChance) {
         }
 
         top += speed;
-        item.style.top = top + "px";
+        item.style.top = top + 'px';
 
         if (top > window.innerHeight) {
             clearInterval(fall);
@@ -219,14 +119,18 @@ function createItem(minS, maxS, bombChance) {
             if (!isBomb) {
                 lives--;
                 document.getElementById('lives').innerText = lives;
-                if (lives <= 0) endGame("Game Over");
+
+                if (lives <= 0) endGame("Thanks from Manoj");
             }
         }
     }, 20);
 
-    item.onclick = function() {
+    // ✅ FIX: better click handling
+    item.addEventListener("click", function(e) {
+        e.stopPropagation();
+
         if (isBomb) {
-            endGame("Don't click bombs 💥");
+            endGame("Never Click on Bombs 💥");
         } else {
             score++;
             document.getElementById('score').innerText = score;
@@ -242,7 +146,7 @@ function createItem(minS, maxS, bombChance) {
 
             updateDifficulty();
         }
-    };
+    });
 }
 
 function endGame(reason) {
@@ -254,6 +158,3 @@ function endGame(reason) {
     document.getElementById('death-reason').innerText = reason;
 }
 </script>
-
-</body>
-</html>
