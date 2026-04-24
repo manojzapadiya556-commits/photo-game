@@ -146,7 +146,6 @@
 <div id="game-over-screen" class="screen">
     <div class="over-box">
         <h1 style="color:var(--danger); font-size:50px;">GAME OVER</h1>
-        <p id="death-reason">તમારી લાઈફ પૂરી થઈ ગઈ!</p>
         <h2>Score: <span id="final-score">0</span></h2>
         <button class="btn" onclick="startGame()">PLAY AGAIN</button>
         <button class="btn" onclick="goHome()">HOME</button>
@@ -154,6 +153,8 @@
 </div>
 
 <script>
+    const isMobile = window.innerWidth < 600;
+
 const userImg = "./photo.jpg";
 
 let score = 0, lives = 10, gameActive = false, gameTimer;
@@ -213,6 +214,24 @@ function updateDifficulty() {
         lvl = "MEDIUM 🟠"; clr = "#facc15";
     }
 
+    // ✅ MOBILE AUTO ADJUSTMENT
+    if (isMobile) {
+        rate += 200;        // slower spawn
+        minS *= 0.7;        // slower speed
+        maxS *= 0.7;
+        bomb *= 0.8;        // fewer bombs
+    }
+
+    // level UI
+    const tag = document.getElementById('level-tag');
+    tag.innerText = "Level: " + lvl;
+    tag.style.borderColor = clr;
+    tag.style.color = clr;
+
+    if (gameActive) {
+        gameTimer = setInterval(() => createItem(minS, maxS, bomb), rate);
+    }
+}
     // ✅ FIX: update level UI
     const tag = document.getElementById('level-tag');
     tag.innerText = "Level: " + lvl;
@@ -255,7 +274,12 @@ function createItem(minS, maxS, bombChance) {
     document.getElementById('game-area').appendChild(item);
 
     let top = -150;
-    const speed = Math.random() * (maxS - minS) + minS;
+    let speed = Math.random() * (maxS - minS) + minS;
+
+// extra mobile smoothness
+if (isMobile) {
+    speed *= 0.8;
+}
 
     const fall = setInterval(() => {
         if (!gameActive) {
