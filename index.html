@@ -167,7 +167,20 @@ document.getElementById('home-high-score').innerText = highScore;
 document.getElementById('game-high-score').innerText = highScore;
 
 // start button
-document.getElementById("startBtn").addEventListener("click", startGame);
+const startBtn = document.getElementById("startBtn");
+
+let started = false;
+
+function safeStart() {
+    if (started) return;
+    started = true;
+    startGame();
+}
+
+startBtn.addEventListener("click", safeStart);
+startBtn.addEventListener("touchstart", safeStart);
+
+
 
 function startGame() {
     score = 0;
