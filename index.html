@@ -89,7 +89,7 @@
         <div class="title">Click On Photos to Get Points</div>
         <div class="developer">Developed by Manoj Zapadiya</div>
         <div class="high-score-display">🏆 High Score: <span id="home-high-score">0</span></div>
-        <button class="btn" id="startBtn">START GAME</button>
+        <button class="btn" onclick="startGame()">START GAME</button>
     </div>
 
     <div id="game-screen" class="screen">
@@ -233,8 +233,6 @@ item.ontouchstart = handleClick;
             document.getElementById('final-score').innerText = score;
             document.getElementById('death-reason').innerText = reason;
         }
-        document.getElementById("startBtn").addEventListener("click", startGame);
-
     </script>
 </body>
 </html>
